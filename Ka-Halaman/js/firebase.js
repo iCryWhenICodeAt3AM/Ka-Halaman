@@ -1,21 +1,27 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+ // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-apiKey: "AIzaSyD6mWpK5bAjSnVi6Lw2W_F_4VwKHkDFLQY",
-authDomain: "ka-halaman-3b22e.firebaseapp.com",
-projectId: "ka-halaman-3b22e",
-storageBucket: "ka-halaman-3b22e.appspot.com",
-messagingSenderId: "510914307696",
-appId: "1:510914307696:web:fd7d4bd893661da356f6b5",
-measurementId: "G-4Y9GN29782"
+    apiKey: "AIzaSyCOR_8PBujHBezTN5lUkxxL5Tp1M7DZYrU",
+    authDomain: "ka-halaman-v2.firebaseapp.com",
+    projectId: "ka-halaman-v2",
+    storageBucket: "ka-halaman-v2.appspot.com",
+    messagingSenderId: "151530126571",
+    appId: "1:151530126571:web:e8eca6af0a77e2a89d12ae",
+    measurementId: "G-ZPT4DX4H9D"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+firebase.initializeApp(firebaseConfig);
+
+// Database
+const db = firebase.firestore();
+
+const firestore = firebase.firestore();
+const settings = {/* your settings... */ timestampsInSnapshots: true};
+firestore.settings(settings);
+
+const userId = "5hjwe1KLm9lDX1mDsrY9";
+const cropId = "APSwuEOr095VYonRRR1q";
+const journalRef = db.collection("users").doc(userId).collection("crops").doc(cropId).collection("journal");
+
+
