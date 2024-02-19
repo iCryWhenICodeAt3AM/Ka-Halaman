@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journal</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .journal-entry {
+      background-color: #f0f0f0; /* Gray background for journal entries */
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Journal</h1>
+  <div id="journal-entries"></div>
+</div>
+
+<!-- Firebase JavaScript SDK -->
+<script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-firestore.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/journal.js"></script>
+</body>
+</html>

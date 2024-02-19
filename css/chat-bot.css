@@ -1,0 +1,32 @@
+/* Add some basic styling for the conversation container */
+#conversationContainer {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+
+  /* Style individual messages */
+  .message {
+    margin-bottom: 10px;
+  }
+
+  .user-message {
+    color: blue;
+  }
+
+  .gemini-message {
+    color: green;
+  }
+  .formatted-text {
+    white-space: pre-line; /* Preserve line breaks */
+  }
+
+  .formatted-text b {
+    font-weight: bold;
+  }
+
+  .formatted-text li {
+    list-style: disc;
+    margin-left: 20px;
+  }
