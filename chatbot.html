@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=q, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/chat-bot.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <!-- Navbar brand -->
+          <a class="navbar-brand" href="#">Navbar</a>
+          
+          <!-- Navbar toggler -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+          <!-- Navbar links -->
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="journalslist.html">Home</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+    <div class="container-fluid" style="height: 100vh;">
+        <div class="row" id="conversationContainer">
+        </div>
+        <div class="row pt-5">
+            <div class="col-6 offset-1">
+                 <div class="form-floating text-dark">
+                     <textarea class="form-control" value="" placeholder="Leave a comment here" id="prompt"></textarea>
+                     <label for="prompt">Send consultation...</label>
+                 </div> 
+             </div>
+            <div class="col-1">
+                <button class="btn btn-light btn-outline-dark" type="button" id="sendMessageButton">
+                    <img src="images/arrow up.svg" alt="arrow up" width="45px">
+                </button>             
+            </div>
+            <div class="col-3 pt-2">
+                <input class="form-control" type="file" id="imageInput" name="imageInput">
+            </div>
+        </div>
+        <div class="row mt-3 mb-2">
+            <div class="col-12" style="overflow-x: auto;">
+                <div class="btn-group" role="group" aria-label="FAQs">
+                    <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('What is the plant, problem, solution, remedies, and products needed?')">What is the plant, problem, solution, remedies, and products needed?</button>
+                    <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('Help me with my crop management.')">Help me with my crop management.</button>
+                    <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('Make me a schedule for my crop.')">Make me a schedule for my crop.</button>
+                    <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('Any tips for newbie farmers?')">Any tips for newbie farmers?</button>
+                    <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('Summarize the conversation.')">Summarize the conversation.</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Function to insert text into textarea
+        function insertText(text) {
+            const textarea = document.getElementById('prompt');
+            textarea.value = text;
+        }
+    </script>
+    <script type="importmap">
+        {
+            "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+            }
+        }
+    </script>
+    <script type="module">
+        import {
+            GoogleGenerativeAI
+        } from "@google/generative-ai";
+
+        // Fetch your API_KEY
+        const API_KEY = "AIzaSyB_DqoktUPNvFgQIf2vTW3R_e2yk4Tj0rM";
+
+        // Access your API key (see "Set up your API key" above)
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        // Conversation array to store user prompts and responses
+        const conversation = [];
+
+        document.getElementById("sendMessageButton").addEventListener("click", function () {
+            const userPrompt = document.getElementById("prompt").value;
+            const fileInputEl = document.getElementById("imageInput");
+            const hasImage = fileInputEl.files.length > 0;
+
+            if (hasImage) {
+            const image = fileInputEl.files[0];
+            sendMessageWithImage(userPrompt, image);
+            } else {
+            sendMessage(userPrompt);
+            }
+            // Clear text value
+            document.getElementById("prompt").value = "";
+            // Clear uploaded image
+            document.getElementById("imageInput").value = "";
+        });
+
+        async function sendMessage(userPrompt) {
+            // Store user message in the conversation
+            conversation.push({ role: 'user', text: userPrompt });
+            // Display the conversation
+            displayConversation();
+
+            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            const result = await model.generateContent(conversation.map(entry => entry.text));
+            const response = await result.response;
+            const text = response.text();
+            console.log(text);
+            // Store Gemini Pro's response in the conversation
+            conversation.push({ role: 'gemini', text: text });
+            // Display the conversation
+            displayConversation();
+        }
+
+        async function sendMessageWithImage(userPrompt, image) {
+            // Store user message in the conversation
+            conversation.push({ role: 'user', text: userPrompt, image: image });
+            // Display the conversation
+            displayConversation();
+
+            const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+
+            const imageUrl = URL.createObjectURL(image);
+
+            const imageParts = await fileToGenerativePart(imageUrl, image.type);
+
+            const result = await model.generateContent([userPrompt, imageParts]);
+            const response = await result.response;
+            const text = response.text();
+            console.log(text);
+            // Store Gemini Pro's response in the conversation
+            conversation.push({ role: 'gemini', text: text, image: imageUrl });
+            // Display the conversation
+            displayConversation();
+        }
+
+        function displayConversation() {
+            const conversationContainer = document.getElementById("conversationContainer");
+
+            // Clear existing messages
+            conversationContainer.innerHTML = '';
+
+            // Display the conversation in the container
+            conversation.forEach(entry => {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `col-12 message ${entry.role}-message`;
+
+            // Interpret and apply formatting rules
+            const formattedText = interpretFormatting(entry.text);
+            messageDiv.innerHTML = `${entry.role}: <div class="formatted-text">${formattedText}</div>`;
+
+            // Add a save button for Gemini Pro's responses
+            if (entry.role === 'gemini') {
+                const saveButton = document.createElement("button");
+                saveButton.textContent = "Save to Journal";
+                saveButton.className = "save-button btn btn-info text-white pt-2 h5";
+                saveButton.onclick = () => saveToJournal(entry.text, saveButton); // Pass the button element as an argument
+                messageDiv.appendChild(saveButton);
+            }
+            
+            conversationContainer.appendChild(messageDiv);
+            });
+
+            // Scroll to the bottom to show the latest message
+            conversationContainer.scrollTop = conversationContainer.scrollHeight;
+        }
+
+        // Function to interpret and apply formatting rules
+        function interpretFormatting(text) {
+            // Replace '*' with <b> for bold
+            text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            
+            // Replace '*' with <li> for bullet points
+            text = text.replace(/\*(.*?)\*/g, '<li>$1</li>');
+            
+            return text;
+        }
+
+        async function fileToGenerativePart(imageUrl, mimeType) {
+            const base64EncodedDataPromise = fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(blob);
+                });
+            });
+
+            return {
+            inlineData: {
+                data: await base64EncodedDataPromise,
+                mimeType: mimeType,
+            },
+            };
+        }
+
+        // Get the collection value from the URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const collection = urlParams.get('collection');
+        console.log(collection);
+        // Access the specific document within "journals".collection("saves");
+        const journalRef = db.collection("users")
+        .doc(userId)
+        .collection("crops")
+        .doc(cropId)
+        .collection("journals")
+        .doc(collection)
+        .collection("saves"); 
+        // Function to save Gemini Pro's response to the journal
+        function saveToJournal(text, buttonElement) {
+            // Change the button text to "Saving..."
+            buttonElement.textContent = "Saving...";
+            buttonElement.disabled = true; // Disable the button during save operation
+            // Here, you can implement the logic to save the response to the journal
+            // For demonstration, let's log the response to the console
+            console.log("Saving to Journal:", text);
+            // Add a new document to the "journal" subcollection with the formatted text
+            journalRef.add({
+                data: text,
+                date: firebase.firestore.Timestamp.now(),
+                from: "bot"
+            })
+            .then((docRef) => {
+                console.log("Document written with ID: ", docRef.id);
+                alert("Saving success!");
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+            })
+            .finally(() => {
+                // Restore the button text to "Save to Journal" and enable the button
+                buttonElement.textContent = "Save to Journal";
+                buttonElement.disabled = false;
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-firestore.js"></script>
+    <script src="js/firebase.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.journal-entry {
+    background-color: #f0f0f0; /* Gray background for journal entries */
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+button.btn {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+}
+

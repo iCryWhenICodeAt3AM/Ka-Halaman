@@ -22,6 +22,6 @@ firestore.settings(settings);
 
 const userId = "5hjwe1KLm9lDX1mDsrY9";
 const cropId = "APSwuEOr095VYonRRR1q";
-const journalRef = db.collection("users").doc(userId).collection("crops").doc(cropId).collection("journal");
+const cropRef = db.collection("users").doc(userId).collection("crops").doc(cropId);
 
 
