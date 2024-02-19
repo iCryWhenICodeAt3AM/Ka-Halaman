@@ -133,8 +133,9 @@
             conversationContainer.scrollTop = conversationContainer.scrollHeight;
         }
 
+        // Function to interpret and apply formatting rules
         function interpretFormatting(text) {
-            // Replace '**' with <b> for bold
+            // Replace '*' with <b> for bold
             text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
             
             // Replace '*' with <li> for bullet points
