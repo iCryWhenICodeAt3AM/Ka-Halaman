@@ -246,6 +246,44 @@
                 buttonElement.disabled = false;
             });
         }
+
+        function fetchJournalData() {
+            // Get the collection value from the URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const collection = urlParams.get('collection');
+            console.log(collection);
+
+            // Access the specific document within "journals" collection
+            const journalRef = db.collection("users")
+                .doc(userId)
+                .collection("crops")
+                .doc(cropId)
+                .collection("journals")
+                .doc(collection)
+                .collection("saves"); 
+
+            // Fetch documents from the journalRef collection
+            journalRef.get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // Store document data in the conversation array
+                    conversation.push({ role: 'gemini', text: data.data }); // Assuming you want to store the entire document data
+
+                    console.log(doc.data);
+                });
+                
+                // Once all documents are fetched and stored in the conversation array, call displayConversation
+                displayConversation();
+                console.log(conversation);
+            }).catch((error) => {
+                console.error("Error getting documents: ", error);
+                // If there's an error, display an alert or handle it accordingly
+            });
+        }
+
+        // Call the fetchJournalData function wherever needed
+        fetchJournalData();
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-app.js"></script>
