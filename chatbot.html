@@ -219,6 +219,7 @@
         .collection("journals")
         .doc(collection)
         .collection("saves"); 
+        
         // Function to save Gemini Pro's response to the journal
         function saveToJournal(text, buttonElement) {
             // Change the button text to "Saving..."
@@ -252,15 +253,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const collection = urlParams.get('collection');
             console.log(collection);
-
-            // Access the specific document within "journals" collection
-            const journalRef = db.collection("users")
-                .doc(userId)
-                .collection("crops")
-                .doc(cropId)
-                .collection("journals")
-                .doc(collection)
-                .collection("saves"); 
 
             // Fetch documents from the journalRef collection
             journalRef.get().then((querySnapshot) => {
