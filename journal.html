@@ -33,12 +33,34 @@
   <!-- Container for Content -->
   <div class="container">
     <div class="row">
-        <div class="col-8">
+        <div class="col-3 p-0 m-0">
+          <button class="btn btn-info text-white m-2" id="addNoteBtn" onclick="showAddNoteForm()">Add Note</button>
+        </div>
+        <div class="col-4 offset-2 p-0">
           <h1>Journal</h1>
         </div>
-        <div class="col-4">
+        <div class="col-3 offset p-0 m-0">
           <button class="btn btn-success m-2" id="consultCropBtn">Consult Crop</button>
+        </div>      
+          <div class="container">
+            <div class="row">
+              <!-- Hidden container -->
+              <div class="d-none col-12" id="noteFormContainer" >
+                <div class="row">
+                  <div class="col-12">
+                    <textarea class="form-control" id="noteTextarea" rows="1" style="resize: vertical; overflow: hidden;" placeholder="Enter your note" oninput="autoResizeTextarea(this)"></textarea>
+                  </div>
+                  <div class="col-3 offset-2">
+                    <button class="btn btn-success m-2" id="saveNoteBtn">Save</button>
+                  </div>
+                  <div class="col-3 offset-2">
+                    <button class="btn btn-danger m-2" id="cancelNoteBtn">Cancel</button>
+                  </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <!-- Journal Entries -->
         <div id="journal-entries" class="col-12">
         </div>
       </div>
@@ -54,3 +76,4 @@
   <script src="js/journal.js"></script>
 </body>
 </html>
+

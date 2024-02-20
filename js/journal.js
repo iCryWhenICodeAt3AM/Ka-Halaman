@@ -47,38 +47,56 @@ function renderJournalEntry(doc) {
     dateString = dateObject.toLocaleString();
   }
   
-  entryDiv.innerHTML = `<div class="container">
-                          <div class="row">
-                            <div class="col-12">
-                              <p><strong>Date:</strong> ${dateString}</p>
-                            </div>
-                            <div class="col-12">
-                              <p><strong>Data:</strong> ${data.data}</p>
-                            </div>
-                            <div class="col-12">
-                              <p><strong>Comment:</strong> ${data.comment ? data.comment : ''}</p>
-                            </div>
-                            <div class="col-12">
-                              <div class="row m-3">
-                                <div class="col-3 offset-2">
-                                  <button type="button" id="${doc.id}-comment" class="btn btn-success btn-sm" onclick="toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')">Comment</button>
-                                </div>
-                                <div class="col-3 offset-2">
-                                  <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
-                                </div>
-                                <div class="col-2"></div>
-                              </div>
-                              <div id="${doc.id}-comment-section" class="col-12"></div> <!-- Added col-12 for the comment section -->
-                            </div>
+  // Determine the button text and click action based on the 'from' value
+  let buttonText;
+  let clickAction;
+  if (data.from === 'user') {
+      buttonText = 'Edit';
+      clickAction = `showEditForm('${doc.id}', '${data.data}')`;
+  } else {
+      buttonText = 'Comment';
+      clickAction = `toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')`;
+  }
+
+  // Create the inner HTML based on whether the entry is from the user or not
+  let innerHTML = `<div class="container">
+                        <div class="row">
+                          <div class="col-12">
+                            <p><strong>Date:</strong> ${dateString}</p>
+                          </div>
+                          <div class="col-12">
+                            <p><strong>Data:</strong> ${data.data}</p>
+                          </div>
+                          <div class="col-12">
+                            <p><strong>From:</strong> ${data.from}</p>
                           </div>`;
+  if (data.from !== 'user') {
+      innerHTML += `<div class="col-12">
+                        <p><strong>Comment:</strong> ${data.comment ? data.comment : ''}</p>
+                    </div>`;
+  }
+  innerHTML += `<div class="col-12">
+                        <div class="row m-3">
+                          <div class="col-3 offset-2">
+                              <button type="button" id="${doc.id}-action" class="btn btn-success btn-sm" onclick="toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')">${buttonText}</button>
+                          </div>
+                          <div class="col-3 offset-2">
+                            <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
+                          </div>
+                          <div class="col-2"></div>
+                        </div>
+                        <div id="${doc.id}-comment-section" class="col-12"></div> <!-- Added col-12 for the comment section -->
+                    </div>
+                  </div>`;
+
+  // Set the inner HTML of entryDiv
+  entryDiv.innerHTML = innerHTML;
   journalEntriesDiv.appendChild(entryDiv);
 }
-
-
 // Function to toggle comment section
 function toggleComment(docId, comment) {
   const commentSection = document.getElementById(`${docId}-comment-section`);
-  const commentButton = document.getElementById(`${docId}-comment`);
+  const commentButton = document.getElementById(`${docId}-action`);
   const existingComment = commentSection.querySelector('textarea');
 
   if (existingComment) {
@@ -117,69 +135,27 @@ function saveComment(docId, comment) {
     return;
   }
 
-  // Check if the document exists
-  journalRef.doc(docId).get().then((doc) => {
-    if (doc.exists) {
-      // Merge the new comment with existing data
-      const updatedData = { comment: comment.trim(), ...doc.data() };
+  // Get the current timestamp
+  const timestamp = firebase.firestore.Timestamp.now();
 
-      // Update or set the data in the document
-      journalRef.doc(docId).set(updatedData).then(() => {
-        console.log("Comment saved successfully!");
-        // Refresh page to reflect changes
-        // location.reload();
-      }).catch((error) => {
-        console.error("Error updating document with comment: ", error);
-      });
-    } else {
-      console.error("Document does not exist.");
-    }
+  // Save the comment and update the date in Firestore
+  journalRef.doc(docId).update({
+    comment: comment.trim(),
+    date: timestamp // Include the timestamp in the update operation
+  }).then(() => {
+    console.log("Comment saved successfully!");
+    // Reset button text and enable it
+    location.reload();
   }).catch((error) => {
-    console.error("Error getting document:", error);
+    console.error("Error saving comment:", error);
+    alert("Error saving comment. Please try again.");
+    // Reset button text and enable it
+    const commentButton = document.getElementById(`${docId}-action`);
+    commentButton.disabled = false;
+    commentButton.textContent = 'Comment';
   });
 }
 
-
-
-// Function to save comment to Firestore document
-function saveComment(docId, comment) {
-  // Check if the comment is defined and not empty
-  if (!comment || comment.trim() === '') {
-    console.error("Invalid comment.");
-    return;
-  }
-
-  // Check if the document exists
-  journalRef.doc(docId).get().then((doc) => {
-    if (doc.exists) {
-      // Get the existing data from the document
-      const data = doc.data();
-      let updatedData;
-
-      // Check if the comment field exists in the document
-      if (data.hasOwnProperty("comment")) {
-        // Update the existing comment field
-        updatedData = { comment: comment.trim() };
-      } else {
-        // Create a new comment field with the provided comment
-        updatedData = { comment: comment.trim() };
-      }
-
-      // Update or set the comment field in the document
-      journalRef.doc(docId).set(updatedData, { merge: true }).then(() => {
-        console.log("Comment saved successfully!");
-        // Refresh page to reflect changes
-        location.reload();
-      }).catch((error) => {
-        console.error("Error updating document with comment: ", error);
-      });
-    } else {
-      console.error("Document does not exist.");
-    }
-  }).catch((error) => {
-    console.error("Error getting document:", error);
-  });
-}
 
 // Function to delete a journal entry
 function deleteJournalEntry(docId) {
@@ -245,3 +221,127 @@ journalRef.orderBy("date", "desc").get().then((querySnapshot) => {
 }).catch((error) => {
   console.error("Error getting journal entries: ", error);
 });
+
+// Function to show the add note form
+function showAddNoteForm() {
+  const noteFormContainer = document.getElementById("noteFormContainer");
+  noteFormContainer.classList.remove("d-none"); // Remove the d-none class to show the container
+}
+
+// Event listener for the "Cancel" button in the add note form
+document.getElementById("cancelNoteBtn").addEventListener("click", function() {
+  // Prompt the user for confirmation
+  const confirmation = confirm("Are you sure you want to cancel adding the note?");
+
+  // If the user confirms the cancellation
+  if (confirmation) {
+      // Hide the add note form
+      hideAddNoteForm();
+  }
+});
+// Event listener for the "Save" button in the add note form
+document.getElementById("saveNoteBtn").addEventListener("click", function() {
+  const noteTextarea = document.getElementById("noteTextarea");
+  const noteText = noteTextarea.value.trim();
+  
+  if (noteText !== "") {
+      // Disable the button to prevent multiple clicks
+      this.disabled = true;
+      // Change the button text to indicate saving is in progress
+      this.textContent = "Saving...";
+      
+      // Save the note to the database
+      journalRef.add({
+              data: noteText,
+              date: firebase.firestore.Timestamp.now(),
+              from: "user" // Assuming the note is added by the user
+          })
+          .then((docRef) => {
+              console.log("Note saved successfully with ID: ", docRef.id);
+              alert("Note saved successfully!");
+              // Reload the page after successfully saving the note
+              location.reload();
+          })
+          .catch((error) => {
+              console.error("Error adding note: ", error);
+              alert("Error adding note. Please try again.");
+          });
+  } else {
+      alert("Please enter a note before saving.");
+  }
+});
+
+// Function to hide the add note form
+function hideAddNoteForm() {
+  const noteFormContainer = document.getElementById("noteFormContainer");
+  const noteTextarea = document.getElementById("noteTextarea");
+  
+  // Clear the textarea content
+  noteTextarea.value = '';
+
+  // Hide the form by adding the d-none class
+  noteFormContainer.classList.add("d-none");
+}
+
+function showEditForm(docId, existingData) {
+  const editFormContainer = document.getElementById(`${docId}-comment-section`);
+  editFormContainer.innerHTML = `
+    <div class="row">
+      <div class="col-12">
+        <textarea class="form-control" id="${docId}-editTextarea" rows="1" style="resize: vertical; overflow: hidden;" placeholder="Enter your note" oninput="autoResizeTextarea(this)">${existingData}</textarea>
+      </div>
+      <div class="col-3 offset-2">
+        <button class="btn btn-success m-2" id="${docId}-saveEditBtn" onclick="saveEditedData('${docId}')">Save</button>
+      </div>
+      <div class="col-3 offset-2">
+        <button class="btn btn-danger m-2" onclick="hideEditForm('${docId}')">Cancel</button>
+      </div>
+    </div>`;toggleComment('Yjzv615lAXUcc37W2sUE', 'Hello there world man super man')
+}
+
+// Function to auto-resize textarea
+function autoResizeTextarea(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = (textarea.scrollHeight) + 'px';
+}
+
+// Function to hide the edit form
+function hideEditForm(docId) {
+  const editFormContainer = document.getElementById(`${docId}-comment-section`);
+  editFormContainer.innerHTML = ''; // Clear the edit form content
+}
+
+// Function to save the edited data
+function saveEditedData(docId) {
+  const editedData = document.getElementById(`${docId}-editTextarea`).value.trim();
+  if (editedData !== '') {
+    // Disable the button to prevent multiple clicks
+    const saveButton = document.getElementById(`${docId}-saveEditBtn`);
+    // saveButton.disabled = true;
+    // Change the button text to indicate saving is in progress
+    saveButton.textContent = "Saving...";
+      
+    // Get the current timestamp
+    const timestamp = firebase.firestore.Timestamp.now();
+    
+    // Save the edited data to Firestore
+    // Replace journalRef with your actual Firestore reference
+    journalRef.doc(docId).update({
+        data: editedData,
+        date: timestamp // Include the timestamp in the update operation
+            // Add other fields to update if needed
+        })
+        .then(() => {
+            console.log('Data edited successfully!');
+            alert('Data edited successfully!');
+            // Reload the page after successfully saving the edited data
+            location.reload();
+        })
+        .catch((error) => {
+            console.error('Error editing data: ', error);
+            alert('Error editing data. Please try again.');
+        });
+} else {
+    alert('Please enter the edited data before saving.');
+}
+}
