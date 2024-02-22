@@ -1,3 +1,4 @@
+const storage = firebase.storage();
 
 const listContainer = document.getElementById('journal-collections');
 
