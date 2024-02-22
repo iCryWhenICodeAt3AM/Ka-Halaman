@@ -88,7 +88,7 @@ function renderJournalEntry(doc) {
   innerHTML += `<div class="col-12">
                         <div class="row m-3">
                           <div class="col-3 offset-2">
-                              <button type="button" id="${doc.id}-action" class="btn btn-success btn-sm" onclick="toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')">${buttonText}</button>
+                            <button type="button" id="${doc.id}-action" class="btn btn-success btn-sm" onclick="${data.from !== 'user' ? `toggleComment('${doc.id}','${data.comment}')` : `showEditForm('${doc.id}', '${data.data}')`}">${buttonText}</button>
                           </div>
                           <div class="col-3 offset-2">
                             <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
