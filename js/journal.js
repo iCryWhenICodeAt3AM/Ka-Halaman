@@ -57,6 +57,16 @@ function renderJournalEntry(doc) {
       buttonText = 'Comment';
       clickAction = `toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')`;
   }
+    
+  // Define regular expressions to match bold and list items
+  const boldRegex = /\*\*(.*?)\*\*/g;
+  const listRegex = /\* (.*?)\n/g;
+
+  // Replace bold text
+  let formattedData = data.data.replace(boldRegex, '<br><strong>$1</strong>');
+
+  // Replace list items
+  formattedData = formattedData.replace(listRegex, '<br>&#8226; $1');
 
   // Create the inner HTML based on whether the entry is from the user or not
   let innerHTML = `<div class="container">
@@ -65,7 +75,7 @@ function renderJournalEntry(doc) {
                             <p><strong>Date:</strong> ${dateString}</p>
                           </div>
                           <div class="col-12">
-                            <p><strong>Data:</strong> ${data.data}</p>
+                            <p><strong>Data:</strong> ${formattedData}</p>
                           </div>
                           <div class="col-12">
                             <p><strong>From:</strong> ${data.from}</p>
