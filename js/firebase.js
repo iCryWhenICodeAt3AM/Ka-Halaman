@@ -27,16 +27,15 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const firestore = firebase.firestore();
-const storage = firebase.storage();
 const settings = {/* your settings... */ timestampsInSnapshots: true};
 firestore.settings(settings);
-
 
 // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
 // const db = firebase.firestore();
 let cropId = "";
 let journalId = "";
+
 // const cropRef = db.collection("users").doc(userId).collection("crops").doc(cropId);
 // const cropRef = db.collection("crops");
 

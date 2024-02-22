@@ -30,16 +30,35 @@ function createNewJournal() {
             name: journalName, // Assuming name is the field name
             date: firebase.firestore.FieldValue.serverTimestamp()
         })
-        .then(() => {
-            console.log("New journal created successfully!");
-            // Refresh journal collection list
-            displayJournalCollections();
+        .then((docRef) => {
+            alert("New journal created successfully!");
+            const journalId = docRef.id; // Get the generated document ID
+            // Display the new journal entry
+            displayJournal(journalName, journalId);
         })
         .catch((error) => {
             console.error("Error creating new journal:", error);
         });
     }
 }
+
+// Function to display a journal entry
+function displayJournal(journalName, journalId) {
+    const contentDiv = `
+        <div class="col-12 text-center mt-3 mb-3" style="cursor: pointer;">
+            <div class="row">
+                <div class="col-12 h3 p-3 rounded" 
+                    onclick="navigateToJournal('${cropId}', '${journalId}')"
+                    onmouseover="this.classList.add('bg-success'); this.classList.add('text-white');"
+                    onmouseout="this.classList.remove('bg-success'); this.classList.remove('text-white');"
+                    style="border: 2px solid black; border-radius: 10px;">
+                    ${journalName}
+                </div>
+            </div>
+        </div>`;
+    journalCollectionsDiv.innerHTML += contentDiv;
+}
+
 
 // // Function to display journal collections
 // function displayJournalCollections() {
