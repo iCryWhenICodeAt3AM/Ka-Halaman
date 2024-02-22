@@ -185,6 +185,7 @@
             // Scroll to the bottom to show the latest message
             conversationContainer.scrollTop = conversationContainer.scrollHeight;
         }
+
         // Function to interpret and apply formatting rules
         function interpretFormatting(text) {
             // Replace '*' with <b> for bold
@@ -195,7 +196,8 @@
             
             return text;
         }
-        
+
+        // File to Generative Part (Compressed)
         async function fileToGenerativePart(imageUrl, mimeType) {
             // Load the image
             const image = new Image();
