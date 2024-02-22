@@ -88,7 +88,7 @@ function renderJournalEntry(doc) {
   innerHTML += `<div class="col-12">
                         <div class="row m-3">
                           <div class="col-3 offset-2">
-                              <button type="button" id="${doc.id}-action" class="btn btn-success btn-sm" onclick="toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')">${buttonText}</button>
+                            <button type="button" id="${doc.id}-action" class="btn btn-success btn-sm" onclick="${data.from !== 'user' ? `toggleComment('${doc.id}','${data.comment ? data.comment : ''}')` : `showEditForm('${doc.id}', '${data.data}')`}">${buttonText}</button>
                           </div>
                           <div class="col-3 offset-2">
                             <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
@@ -103,6 +103,7 @@ function renderJournalEntry(doc) {
   entryDiv.innerHTML = innerHTML;
   journalEntriesDiv.appendChild(entryDiv);
 }
+
 // Function to toggle comment section
 function toggleComment(docId, comment) {
   const commentSection = document.getElementById(`${docId}-comment-section`);
@@ -112,19 +113,12 @@ function toggleComment(docId, comment) {
   if (existingComment) {
     // User clicked "Done" button
     const commentValue = existingComment.value.trim();
-    if (commentValue !== '') {
-      // Disable the "Done" button
-      commentButton.disabled = true;
-      // Change button text to "Saving..."
-      commentButton.textContent = 'Saving...';
-      // Save comment to Firestore document
-      saveComment(docId, commentValue);
-    } else {
-      // Remove comment textarea if it's empty
-      commentSection.innerHTML = '';
-      // Change button text back to "Comment"
-      commentButton.textContent = 'Comment';
-    }
+    // Disable the "Done" button
+    commentButton.disabled = true;
+    // Change button text to "Saving..."
+    commentButton.textContent = 'Saving...';
+    // Save comment to Firestore document
+    saveComment(docId, commentValue);
   } else {
     // User clicked "Comment" button
     // Create textarea for adding comment
@@ -139,12 +133,6 @@ function toggleComment(docId, comment) {
 
 // Function to save comment to Firestore document
 function saveComment(docId, comment) {
-  // Check if the comment is defined and not empty
-  if (!comment || comment.trim() === '') {
-    console.error("Invalid comment.");
-    return;
-  }
-
   // Get the current timestamp
   const timestamp = firebase.firestore.Timestamp.now();
 
@@ -306,7 +294,7 @@ function showEditForm(docId, existingData) {
       <div class="col-3 offset-2">
         <button class="btn btn-danger m-2" onclick="hideEditForm('${docId}')">Cancel</button>
       </div>
-    </div>`;toggleComment('Yjzv615lAXUcc37W2sUE', 'Hello there world man super man')
+    </div>`;
 }
 
 // Function to auto-resize textarea
