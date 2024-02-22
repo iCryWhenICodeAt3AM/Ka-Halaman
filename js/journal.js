@@ -1,13 +1,19 @@
 // Get the collection value from the URL parameter
 const urlParams = new URLSearchParams(window.location.search);
-const collection = urlParams.get('collection');
-console.log(collection);
-const journalRef = db.collection("users")
-    .doc(userId)
-    .collection("crops")
+cropId = urlParams.get('cropId');
+journalId = urlParams.get('journalId');
+// console.log(collection);
+// const journalRef = db.collection("users")
+//     .doc(userId)
+//     .collection("crops")
+//     .doc(cropId)
+//     .collection("journals")
+//     .doc(collection)
+//     .collection("saves"); // Access the specific document within "journals".collection("saves");
+const journalRef = db.collection("crops")
     .doc(cropId)
     .collection("journals")
-    .doc(collection)
+    .doc(journalId)
     .collection("saves"); // Access the specific document within "journals".collection("saves");
 // Function to interpret and apply formatting rules
 function interpretFormatting(text) {
@@ -196,8 +202,7 @@ function deleteJournalEntry(docId) {
 document.getElementById('consultCropBtn').addEventListener('click', function() {
   // Construct the URL for index.html with the collection ID as a query parameter
   const urlParams = new URLSearchParams(window.location.search);
-  const collectionId = urlParams.get('collection');
-  const indexPageUrl = `chatbot.html?collection=${collectionId}`;
+  const indexPageUrl = `chatbot.html?cropId=${urlParams.get('cropId')}&journalId=${urlParams.get('journalId')}`;
   
   // Redirect to index.html with the collection ID preserved
   window.location.href = indexPageUrl;
@@ -339,7 +344,7 @@ function saveEditedData(docId) {
             console.error('Error editing data: ', error);
             alert('Error editing data. Please try again.');
         });
-} else {
-    alert('Please enter the edited data before saving.');
-}
+  } else {
+      alert('Please enter the edited data before saving.');
+  }
 }

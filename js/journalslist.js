@@ -23,10 +23,8 @@ const journalCollectionsDiv = document.getElementById('journal-collections'); //
 function createNewJournal() {
     const journalName = prompt("Enter the name for the new journal:");
     if (journalName) {
-        db.collection("users")
-        .doc("5hjwe1KLm9lDX1mDsrY9")
-        .collection("crops")
-        .doc("APSwuEOr095VYonRRR1q")
+        db.collection("crops")
+        .doc(cropId)
         .collection("journals")
         .add({
             name: journalName, // Assuming name is the field name
@@ -43,48 +41,48 @@ function createNewJournal() {
     }
 }
 
-// Function to display journal collections
-function displayJournalCollections() {
-    // Clear existing collection buttons
-    journalCollectionsDiv.innerHTML = '';
+// // Function to display journal collections
+// function displayJournalCollections() {
+//     // Clear existing collection buttons
+//     journalCollectionsDiv.innerHTML = '';
     
-    db.collection("users")
-    .doc("5hjwe1KLm9lDX1mDsrY9")
-    .collection("crops")
-    .doc("APSwuEOr095VYonRRR1q")
-    .collection("journals")
-    .orderBy("date", "desc") // Sort documents by timestamp in descending order
-    .get()
-    .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            // Access the document data
-            const data = doc.data();
-            // Get the name from the document data
-            const docName = data.name; // Assuming the name field exists in the document data
-            // Create a button for each document
-            const button = document.createElement('button');
-            button.textContent = docName; // Display the document name as text
-            button.className = 'journal-collection-button m-2';
-            // Add click event listener to navigate to journal.html
-            button.addEventListener('click', () => {
-                // Redirect to journal.html with query parameter 'collection' set to docId
-                window.location.href = `journal.html?collection=${doc.id}`;
-            });
-            // Append the button to the container
-            journalCollectionsDiv.appendChild(button);
-        });
-    })
-    .catch((error) => {
-        console.error("Error getting documents: ", error);
-    });
-}
+//     db.collection("users")
+//     .doc("5hjwe1KLm9lDX1mDsrY9")
+//     .collection("crops")
+//     .doc("APSwuEOr095VYonRRR1q")
+//     .collection("journals")
+//     .orderBy("date", "desc") // Sort documents by timestamp in descending order
+//     .get()
+//     .then((querySnapshot) => {
+//         querySnapshot.forEach((doc) => {
+//             // Access the document data
+//             const data = doc.data();
+//             // Get the name from the document data
+//             const docName = data.name; // Assuming the name field exists in the document data
+//             // Create a button for each document
+//             const button = document.createElement('button');
+//             button.textContent = docName; // Display the document name as text
+//             button.className = 'journal-collection-button m-2';
+//             // Add click event listener to navigate to journal.html
+//             button.addEventListener('click', () => {
+//                 // Redirect to journal.html with query parameter 'collection' set to docId
+//                 window.location.href = `journal.html?collection=${doc.id}`;
+//             });
+//             // Append the button to the container
+//             journalCollectionsDiv.appendChild(button);
+//         });
+//     })
+//     .catch((error) => {
+//         console.error("Error getting documents: ", error);
+//     });
+// }
 
 
-// Function to view journal entries inside a specific collection
-function viewJournalEntries(collectionName) {
-    // Add your logic here to display journal entries inside the specified collection
-    console.log("Viewing journal entries for collection:", collectionName);
-}
+// // Function to view journal entries inside a specific collection
+// function viewJournalEntries(collectionName) {
+//     // Add your logic here to display journal entries inside the specified collection
+//     console.log("Viewing journal entries for collection:", collectionName);
+// }
 
-// Call createNewJournal after fetching initial list of collections
-displayJournalCollections();
+// // Call createNewJournal after fetching initial list of collections
+// displayJournalCollections();

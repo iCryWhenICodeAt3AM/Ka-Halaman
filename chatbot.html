@@ -34,18 +34,18 @@
         <div class="row" id="conversationContainer">
         </div>
         <div class="row pt-5">
-            <div class="col-6 offset-1">
+            <div class="col-9 col-lg-6 offset-lg-1">
                  <div class="form-floating text-dark">
                      <textarea class="form-control" value="" placeholder="Leave a comment here" id="prompt"></textarea>
                      <label for="prompt">Send consultation...</label>
                  </div> 
              </div>
-            <div class="col-1">
+            <div class="col-3 col-lg-2 ">
                 <button class="btn btn-light btn-outline-dark" type="button" id="sendMessageButton">
                     <img src="images/arrow up.svg" alt="arrow up" width="45px">
                 </button>             
             </div>
-            <div class="col-3 pt-2">
+            <div class="col-12 col-lg-3 pt-2">
                 <input class="form-control" type="file" id="imageInput" name="imageInput">
             </div>
         </div>
@@ -176,6 +176,7 @@
                     const imageElement = document.createElement('img');
                     imageElement.src = URL.createObjectURL(entry.image); // Assuming the image is a File object
                     imageElement.alt = 'User Image';
+                    imageElement.style = 'max-width: 500px; max-height: 500px;';
                     messageDiv.appendChild(imageElement);
                 }
 
@@ -247,15 +248,15 @@
 
         // Get the collection value from the URL parameter
         const urlParams = new URLSearchParams(window.location.search);
-        const collection = urlParams.get('collection');
-        console.log(collection);
+        // console.log(collection);
         // Access the specific document within "journals".collection("saves");
-        const journalRef = db.collection("users")
-        .doc(userId)
-        .collection("crops")
+        // Get the collection value from the URL parameter
+        cropId = urlParams.get('cropId');
+        journalId = urlParams.get('journalId');
+        const journalRef = db.collection("crops")
         .doc(cropId)
         .collection("journals")
-        .doc(collection)
+        .doc(journalId)
         .collection("saves"); 
         
         // Function to save Gemini Pro's response to the journal
