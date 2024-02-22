@@ -154,29 +154,36 @@
 
             // Display the conversation in the container
             conversation.forEach(entry => {
-            const messageDiv = document.createElement("div");
-            messageDiv.className = `col-12 message ${entry.role}-message`;
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `col-12 message ${entry.role}-message`;
 
-            // Interpret and apply formatting rules
-            const formattedText = interpretFormatting(entry.text);
-            messageDiv.innerHTML = `${entry.role}: <div class="formatted-text">${formattedText}</div>`;
+                // Interpret and apply formatting rules
+                const formattedText = interpretFormatting(entry.text);
+                messageDiv.innerHTML = `${entry.role}: <div class="formatted-text">${formattedText}</div>`;
 
-            // Add a save button for Gemini Pro's responses
-            if (entry.role === 'gemini') {
-                const saveButton = document.createElement("button");
-                saveButton.textContent = "Save to Journal";
-                saveButton.className = "save-button btn btn-info text-white pt-2 h5";
-                saveButton.onclick = () => saveToJournal(entry.text, saveButton); // Pass the button element as an argument
-                messageDiv.appendChild(saveButton);
-            }
-            
-            conversationContainer.appendChild(messageDiv);
+                // Add a save button for Gemini Pro's responses
+                if (entry.role === 'gemini') {
+                    const saveButton = document.createElement("button");
+                    saveButton.textContent = "Save to Journal";
+                    saveButton.className = "save-button btn btn-info text-white pt-2 h5";
+                    saveButton.onclick = () => saveToJournal(entry.text, saveButton); // Pass the button element as an argument
+                    messageDiv.appendChild(saveButton);
+                }
+
+                // If the user's input contains an image, display it
+                if (entry.role === 'user' && entry.image) {
+                    const imageElement = document.createElement('img');
+                    imageElement.src = URL.createObjectURL(entry.image); // Assuming the image is a File object
+                    imageElement.alt = 'User Image';
+                    messageDiv.appendChild(imageElement);
+                }
+
+                conversationContainer.appendChild(messageDiv);
             });
 
             // Scroll to the bottom to show the latest message
             conversationContainer.scrollTop = conversationContainer.scrollHeight;
         }
-
         // Function to interpret and apply formatting rules
         function interpretFormatting(text) {
             // Replace '*' with <b> for bold
@@ -254,8 +261,8 @@
             const collection = urlParams.get('collection');
             console.log(collection);
 
-            // Fetch documents from the journalRef collection
-            journalRef.get().then((querySnapshot) => {
+            // Fetch documents from the journalRef collection and order them by the "date" field in ascending order
+            journalRef.orderBy("date", "asc").get().then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     // Store document data in the conversation array
