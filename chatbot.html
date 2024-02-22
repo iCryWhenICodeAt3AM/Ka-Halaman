@@ -114,6 +114,7 @@
             displayConversation();
 
             const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            // Does not generate content with image awareness
             const result = await model.generateContent(conversation.map(entry => entry.text));
             const response = await result.response;
             const text = response.text();
@@ -135,7 +136,7 @@
             const imageUrl = URL.createObjectURL(image);
 
             const imageParts = await fileToGenerativePart(imageUrl, image.type);
-
+            // Does not generate content with context from the conversation
             const result = await model.generateContent([userPrompt, imageParts]);
             const response = await result.response;
             const text = response.text();
@@ -194,23 +195,51 @@
             
             return text;
         }
-
+        
         async function fileToGenerativePart(imageUrl, mimeType) {
-            const base64EncodedDataPromise = fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                reader.readAsDataURL(blob);
-                });
+            // Load the image
+            const image = new Image();
+            image.src = imageUrl;
+
+            // Wait for the image to load
+            await new Promise((resolve) => {
+                image.onload = resolve;
             });
 
+            // Define maximum dimensions for the resized image
+            const maxWidth = 500;
+            const maxHeight = 500;
+
+            // Calculate new dimensions while maintaining aspect ratio
+            let newWidth = image.width;
+            let newHeight = image.height;
+            if (newWidth > maxWidth) {
+                const ratio = maxWidth / newWidth;
+                newWidth = maxWidth;
+                newHeight *= ratio;
+            }
+            if (newHeight > maxHeight) {
+                const ratio = maxHeight / newHeight;
+                newHeight = maxHeight;
+                newWidth *= ratio;
+            }
+
+            // Create a canvas element to draw the resized image
+            const canvas = document.createElement('canvas');
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0, newWidth, newHeight);
+
+            // Convert the canvas to base64-encoded data URL
+            const base64DataUrl = canvas.toDataURL(mimeType);
+
+            // Return the generative part
             return {
-            inlineData: {
-                data: await base64EncodedDataPromise,
-                mimeType: mimeType,
-            },
+                inlineData: {
+                    data: base64DataUrl.split(',')[1],
+                    mimeType: mimeType,
+                },
             };
         }
 
