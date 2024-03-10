@@ -385,3 +385,16 @@ function saveEditedData(docId) {
       alert('Please enter the edited data before saving.');
   }
 }
+
+// Get the maximum screen height
+const maxScreenHeight = window.screen.availHeight;
+
+// Calculate 30% of the maximum screen height
+const thirtyPercentHeight = 0.78 * maxScreenHeight;
+
+// Set the journal-entries element's max-height and height properties
+const journalEntries = document.getElementById('journal-entries');
+if (journalEntries) {
+    journalEntries.style.maxHeight = `${thirtyPercentHeight}px`;
+    journalEntries.style.height = `${thirtyPercentHeight}px`;
+}
