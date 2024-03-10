@@ -7,63 +7,46 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="css/journal.css">
+  <link rel="stylesheet" href="css/global.css">
+
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <!-- Navbar brand -->
-      <a class="navbar-brand" href="#">Navbar</a>
-      
-      <!-- Navbar toggler -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <!-- Navbar links -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="journalslist.html">Home</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
   <!-- Container for Content -->
   <div class="container">
     <div class="row">
-        <div class="col-3 col-lg-4 p-0 m-0">
-          <button class="btn btn-info text-white m-2 btn-sm" id="addNoteBtn" onclick="showAddNoteForm()">Add Note</button>
+        <div class="col-1 pt-3">
+            <a href="newcrop.html">
+              <img src="images/backbutton.svg" alt="back button">
+            </a>
         </div>
-        <div class="col-5 col-lg-4 p-0 text-center">
-          <h1>Journal</h1>
+        <div class="col-4 col-lg-4 pt-2 mt-2 text-center title">
+          <h4><b>Journal</b></h4>
         </div>
-        <div class="col-3 col-lg-4 m-0">
-          <button class="btn btn-success m-2 btn-sm" id="consultCropBtn">Consult Crop</button>
-        </div>      
+        <div class="col-5 offset-2">
+          <button class="btn btn-success mt-2 p-2" id="saveNoteBtn"><b>SAVE</b></button>
+        </div>   
           <div class="container">
             <div class="row">
               <!-- Hidden container -->
-              <div class="d-none col-12" id="noteFormContainer" >
+              <div class="col-12 mb-3" id="noteFormContainer" >
                 <div class="row">
-                  <div class="col-12">
+                  <div class="col-12 pt-2">
                     <textarea class="form-control" id="noteTextarea" rows="1" style="resize: vertical; overflow: hidden;" placeholder="Enter your note" oninput="autoResizeTextarea(this)"></textarea>
                   </div>
-                  <div class="col-3 offset-2">
-                    <button class="btn btn-success m-2" id="saveNoteBtn">Save</button>
-                  </div>
-                  <div class="col-3 offset-2">
+                  <!-- <div class="col-3 offset-2">
                     <button class="btn btn-danger m-2" id="cancelNoteBtn">Cancel</button>
-                  </div>
+                  </div> -->
               </div>
-            </div>
+            </div> 
           </div>
         </div>
-        <!-- Journal Entries -->
-        <div id="journal-entries" class="col-12">
-        </div>
+          <div id="journal-entries" class="col-12">
+              <!-- Your journal entries content goes here -->
+        </div>      
       </div>
+      <div class="col-12 col-lg-12 m-0 pt-3">
+        <button class="btn btn-success btn-lg" id="consultCropBtn"><b>Consult Crop</b></button>
+      </div>   
     </div>
   </div>
 
@@ -71,7 +54,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   <!-- Firebase JavaScript SDK -->
   <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-app.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-storage.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-firestore.js"></script>
   <script src="js/firebase.js"></script>

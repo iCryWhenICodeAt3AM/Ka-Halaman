@@ -1,5 +1,4 @@
 
-
 const listContainer = document.getElementById('journal-collections');
 
 // Function to save new crop
@@ -53,6 +52,9 @@ async function displayCrops() {
         const cropData = doc.data();
         const cropName = cropData.cropName;
         const initialBudget = cropData.initialBudget;
+        // Rey Adjustment
+        let cropId = doc.id;
+
 
         // Create new row in table
         const row = cropsTable.insertRow();
@@ -69,6 +71,8 @@ async function displayCrops() {
         deleteButton.innerHTML = 'X'; // Set the button text to "X"
         deleteButton.classList.add('btn', 'btn-danger', 'delete-crop-button');
         deleteButton.dataset.cropName = cropName; // Store the crop name as a data attribute
+        // Rey adjustment
+        deleteButton.dataset.cropId = cropId; // Store the crop name as a data attribute
         cell3.appendChild(deleteButton);
 
         // Add swipe gesture handler to each cell
@@ -277,13 +281,6 @@ function displayTodosForCrop(cropName) {
         });
 }
 
-
-
-
-
-
-
-
         // Event listener for the "Save" button in the add todo form
         document.body.addEventListener('submit', function (event) {
             if (event.target.id === 'addTodoForm') {
@@ -351,32 +348,26 @@ document.addEventListener('DOMContentLoaded', function () {
     displayCrops();
 });
 
-    // Add event listener to delete buttons when the DOM is loaded
+// Add event listener to delete buttons when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
     const deleteButtons = document.querySelectorAll('.delete-crop-button');
     deleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             const confirmation = confirm('Are you sure you want to delete this crop?');
             if (confirmation) {
-                // Get the crop name from the row
-                const cropName = button.dataset.cropName;
-                // Delete crop from Firestore
-                db.collection("crops").where("cropName", "==", cropName)
-                    .get()
-                    .then((querySnapshot) => {
-                        querySnapshot.forEach((doc) => {
-                            doc.ref.delete().then(() => {
-                                console.log("Crop successfully deleted!");
-                                window.alert('Crop successfully deleted!');
-                                // Refresh crops and carousel
-                                displayCrops();
-                            }).catch((error) => {
-                                console.error("Error deleting crop: ", error);
-                            });
-                        });
+                // Get the document ID from the button's data attribute
+                const docId = button.dataset.docId;
+                
+                // Delete crop document from Firestore
+                db.collection("crops").doc(docId).delete()
+                    .then(() => {
+                        console.log("Crop successfully deleted!");
+                        window.alert('Crop successfully deleted!');
+                        // Refresh crops and carousel
+                        displayCrops();
                     })
                     .catch((error) => {
-                        console.log("Error getting documents: ", error);
+                        console.error("Error deleting crop: ", error);
                     });
             }
         });
