@@ -124,7 +124,7 @@ function renderJournalEntry(doc) {
                         <div class="col-6">
                           <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
                         </div>
-                        <div id="${doc.id}-comment-section" class="col-12"></div> <!-- Added col-12 for the comment section -->
+                        <div id="${doc.id}-comment-section" class="col-12 pt-2"></div> <!-- Added col-12 for the comment section -->
                     </div>
                   </div>`;
 
@@ -148,6 +148,7 @@ function myFunction(id) {
   }
   
 }
+
 // Function to toggle comment section
 function toggleComment(docId, comment) {
   const commentSection = document.getElementById(`${docId}-comment-section`);
@@ -390,12 +391,12 @@ function saveEditedData(docId) {
 // Get the maximum screen height
 const maxScreenHeight = window.screen.availHeight;
 
-// Calculate % of the maximum screen height
-const thirtyPercentHeight = 0.70 * maxScreenHeight;
+// Calculate 30% of the maximum screen height
+const percentHeight = 0.70 * maxScreenHeight;
 
 // Set the journal-entries element's max-height and height properties
 const journalEntries = document.getElementById('journal-entries');
 if (journalEntries) {
-    journalEntries.style.maxHeight = `${thirtyPercentHeight}px`;
-    journalEntries.style.height = `${thirtyPercentHeight}px`;
+    journalEntries.style.maxHeight = `${percentHeight}px`;
+    journalEntries.style.height = `${percentHeight}px`;
 }
