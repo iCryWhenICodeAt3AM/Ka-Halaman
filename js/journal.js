@@ -124,6 +124,7 @@ function renderJournalEntry(doc) {
                         <div class="col-6">
                           <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
                         </div>
+                        <div id="${doc.id}-comment-section" class="col-12"></div> <!-- Added col-12 for the comment section -->
                     </div>
                   </div>`;
 
