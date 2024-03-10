@@ -12,8 +12,6 @@ button.btn {
 }
 
 #journal-entries{
-    max-height: 475px; 
-    height: 475px;
     overflow-x: auto;
 }
 

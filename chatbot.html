@@ -67,6 +67,20 @@
 
         // Set the href attribute of the anchor tag
         document.getElementById("backLink").setAttribute("href", newUrl);
+
+        // Get the maximum screen height
+        const maxScreenHeight = window.screen.availHeight;
+
+        // Calculate 30% of the maximum screen height
+        const percentHeight = 0.80 * maxScreenHeight;
+
+        // Set the conversationContainer element's max-height and height properties
+        const conversationContainer = document.getElementById('conversationContainer');
+        if (conversationContainer) {
+            conversationContainer.style.maxHeight = `${percentHeight}px`;
+            conversationContainer.style.height = `${percentHeight}px`;
+        }
+
     </script>
     <script type="importmap">
         {
