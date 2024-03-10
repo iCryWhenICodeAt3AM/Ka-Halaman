@@ -11,3 +11,22 @@ button.btn {
     border-radius: 20px;
 }
 
+#journal-entries{
+    max-height: 475px; 
+    height: 475px;
+    overflow-x: auto;
+}
+
+.dots{
+    display: inline;
+}
+.more{
+    display: none;
+}
+.journal-entry{
+    background-color: #DAF0DB;
+    border-radius: 10px;
+}
+#time{
+    color: #2B5900;
+}

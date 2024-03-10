@@ -1,0 +1,16 @@
+body{
+    color: #0B1600;
+}
+.title{
+    color: #062E26;
+}
+.formatted-text {
+    white-space: pre-line; /* Preserve line breaks */
+}
+.formatted-text b {
+    font-weight: bold;
+}
+.formatted-text li {
+    list-style: disc;
+    margin-left: 20px;
+}

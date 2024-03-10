@@ -6,50 +6,39 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Document</title>
     <link rel="stylesheet" href="css/chat-bot.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-          <!-- Navbar brand -->
-          <a class="navbar-brand" href="#">Navbar</a>
-          
-          <!-- Navbar toggler -->
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          
-          <!-- Navbar links -->
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="journalslist.html">Home</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
     <div class="container-fluid" style="height: 100vh;">
+        <div class="row">
+            <div class="col-1 pt-3">
+                <a id="backLink">
+                  <img src="images/backbutton.svg" alt="">
+                </a>
+            </div>
+            <div class="col-11 pt-2 mt-2 text-center title">
+              <h4><b>Consult Crop</b></h4>
+            </div>
+        </div>
         <div class="row" id="conversationContainer">
         </div>
-        <div class="row pt-5">
-            <div class="col-9 col-lg-6 offset-lg-1">
+        <div class="row pt-2">
+            <div class="col-10">
                  <div class="form-floating text-dark">
                      <textarea class="form-control" value="" placeholder="Leave a comment here" id="prompt"></textarea>
-                     <label for="prompt">Send consultation...</label>
+                     <label for="prompt">Ask something...</label>
                  </div> 
              </div>
-            <div class="col-3 col-lg-2 ">
-                <button class="btn btn-light btn-outline-dark" type="button" id="sendMessageButton">
-                    <img src="images/arrow up.svg" alt="arrow up" width="45px">
+            <div class="col-2 text-center">
+                <button class="btn btn-light btn-outline-success" type="button" id="sendMessageButton">
+                    <img src="images/arrow up.svg" alt="arrow up" width="100%" height="45px">
                 </button>             
             </div>
-            <div class="col-12 col-lg-3 pt-2">
+            <div class="col-12 pt-2">
                 <input class="form-control" type="file" id="imageInput" name="imageInput">
             </div>
         </div>
-        <div class="row mt-3 mb-2">
+        <!-- <div class="row mt-3 mb-2">
             <div class="col-12" style="overflow-x: auto;">
                 <div class="btn-group" role="group" aria-label="FAQs">
                     <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('What is the plant, problem, solution, remedies, and products needed?')">What is the plant, problem, solution, remedies, and products needed?</button>
@@ -59,7 +48,7 @@
                     <button type="button" class="btn btn-primary btn-sm me-1" onclick="insertText('Summarize the conversation.')">Summarize the conversation.</button>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
     
     <script>
@@ -68,6 +57,16 @@
             const textarea = document.getElementById('prompt');
             textarea.value = text;
         }
+        // Get current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        cropId = urlParams.get('cropId');
+        journalId = urlParams.get('journalId');
+
+        // Construct the new URL with additional query parameters
+        const newUrl = `journal.html?cropId=${cropId}&journalId=${journalId}`;
+
+        // Set the href attribute of the anchor tag
+        document.getElementById("backLink").setAttribute("href", newUrl);
     </script>
     <script type="importmap">
         {
@@ -156,17 +155,17 @@
             // Display the conversation in the container
             conversation.forEach(entry => {
                 const messageDiv = document.createElement("div");
-                messageDiv.className = `col-12 message ${entry.role}-message`;
+                messageDiv.className = `col-12 message ${entry.role}-message p-3`;
 
                 // Interpret and apply formatting rules
                 const formattedText = interpretFormatting(entry.text);
-                messageDiv.innerHTML = `${entry.role}: <div class="formatted-text">${formattedText}</div>`;
+                messageDiv.innerHTML = `<div class="formatted-text ${entry.role === 'user' ? 'text-end' : ''}">${formattedText}</div>`;
 
                 // Add a save button for Gemini Pro's responses
                 if (entry.role === 'gemini') {
                     const saveButton = document.createElement("button");
-                    saveButton.textContent = "Save to Journal";
-                    saveButton.className = "save-button btn btn-info text-white pt-2 h5";
+                    saveButton.textContent = "Save";
+                    saveButton.className = "save-button btn btn-outline-info mt-3 h5";
                     saveButton.onclick = () => saveToJournal(entry.text, saveButton); // Pass the button element as an argument
                     messageDiv.appendChild(saveButton);
                 }
@@ -176,7 +175,7 @@
                     const imageElement = document.createElement('img');
                     imageElement.src = URL.createObjectURL(entry.image); // Assuming the image is a File object
                     imageElement.alt = 'User Image';
-                    imageElement.style = 'max-width: 500px; max-height: 500px;';
+                    imageElement.style = 'max-width: 100%; max-height: 400px;';
                     messageDiv.appendChild(imageElement);
                 }
 
@@ -247,7 +246,6 @@
         }
 
         // Get the collection value from the URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
         // console.log(collection);
         // Access the specific document within "journals".collection("saves");
         // Get the collection value from the URL parameter
@@ -271,7 +269,7 @@
             journalRef.add({
                 data: text,
                 date: firebase.firestore.Timestamp.now(),
-                from: "bot"
+                from: "gemini"
             })
             .then((docRef) => {
                 console.log("Document written with ID: ", docRef.id);
@@ -282,14 +280,13 @@
             })
             .finally(() => {
                 // Restore the button text to "Save to Journal" and enable the button
-                buttonElement.textContent = "Save to Journal";
-                buttonElement.disabled = false;
+                buttonElement.textContent = "Save";
+                buttonElement.disabled = true;
             });
         }
 
         function fetchJournalData() {
             // Get the collection value from the URL parameter
-            const urlParams = new URLSearchParams(window.location.search);
             const collection = urlParams.get('collection');
             console.log(collection);
 
@@ -298,7 +295,7 @@
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     // Store document data in the conversation array
-                    conversation.push({ role: 'gemini', text: data.data }); // Assuming you want to store the entire document data
+                    conversation.push({ role: data.from, text: data.data }); // Assuming you want to store the entire document data
 
                     console.log(doc.data);
                 });
@@ -314,7 +311,7 @@
 
         // Call the fetchJournalData function wherever needed
         fetchJournalData();
-
+        
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/5.0.3/firebase-app.js"></script>

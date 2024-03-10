@@ -1,35 +1,25 @@
 /* Add some basic styling for the conversation container */
 #conversationContainer {
+  background-color: rgb(138, 214, 138);
+  max-height: 500px;
+  height: 500px;
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
 }
-
 /* Style individual messages */
 .message {
   margin-bottom: 10px;
 }
-
-.user-message {
-  color: blue;
+.gemini-message{
+  background-color: #fff;
+  border-radius: 10px;
 }
-
-.gemini-message {
-  color: green;
+.user-message{
+  background-color: rgb(97, 241, 241);
+  border-radius: 10px;
+  text-align: left;
 }
-.formatted-text {
-  white-space: pre-line; /* Preserve line breaks */
-}
-
-.formatted-text b {
-  font-weight: bold;
-}
-
-.formatted-text li {
-  list-style: disc;
-  margin-left: 20px;
-}
-
 .btn-group .btn{
   font-size: 12px;
 }

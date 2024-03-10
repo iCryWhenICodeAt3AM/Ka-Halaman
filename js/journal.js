@@ -63,45 +63,67 @@ function renderJournalEntry(doc) {
       buttonText = 'Comment';
       clickAction = `toggleComment('${doc.id}', '${data.comment ? data.comment : ''}')`;
   }
-    
-  // Define regular expressions to match bold and list items
-  const boldRegex = /\*\*(.*?)\*\*/g;
-  const listRegex = /\* (.*?)\n/g;
 
-  // Replace bold text
-  let formattedData = data.data.replace(boldRegex, '<br><strong>$1</strong>');
+  // Replace '*' with <b> for bold
+  let formattedData = data.data.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  
+  // Replace '*' with <li> for bullet points
+  formattedData = formattedData.replace(/\*(.*?)\*/g, '<li>$1</li>');
+  
+  // Split the formattedData into words
+  let words = formattedData.split(' ');
 
-  // Replace list items
-  formattedData = formattedData.replace(listRegex, '<br>&#8226; $1');
+  // Check if the number of words is greater than 30
+  if (words.length > 30) {
+      // Join the first 30 words
+      let first30Words = words.slice(0, 30).join(' ');
 
+      // Join the rest of the words
+      let restOfWords = words.slice(30).join(' ');
+
+      // Concatenate the first 30 words with the rest wrapped in spans
+      formattedData = `${first30Words}<span id="${doc.id}-dots" class="dots">...</span><span id="${doc.id}-more" class="more"> ${restOfWords}</span>`;
+  }
+  // Assuming dateString is the timestamp retrieved from Firestore
+  const dateObject = new Date(dateString);
+  const timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format time (e.g., "8:00 AM")
   // Create the inner HTML based on whether the entry is from the user or not
-  let innerHTML = `<div class="container">
-                        <div class="row">
-                          <div class="col-12">
-                            <p><strong>Date:</strong> ${dateString}</p>
-                          </div>
-                          <div class="col-12">
-                            <p><strong>Data:</strong> ${formattedData}</p>
-                          </div>
-                          <div class="col-12">
-                            <p><strong>From:</strong> ${data.from}</p>
-                          </div>`;
+  let innerHTML = `
+    <div class="container p-0">
+      <div class="row">
+        <div class="col-12" id="${doc.id}-anchor">
+            <p id="time"><strong>${timeString}</strong></p>
+        </div>
+        <div class="col-12 ${doc.id}-entry-content formatted-text">
+            ${formattedData}
+        </div>`;
+
+  if (words.length > 30) {
+    innerHTML += `
+          <a href="#${doc.id}-anchor">
+              <button onclick="myFunction('${doc.id}')" id="${doc.id}-myBtn" class="btn">Read more</button>
+          </a>
+    `;
+  }
+
+  innerHTML += `   
+      </div>
+  `;
+
   if (data.from !== 'user') {
       innerHTML += `<div class="col-12">
-                        <p><strong>Comment:</strong> ${data.comment ? data.comment : ''}</p>
+                        <strong>Comment:</strong><br>
+                        ${data.comment ? data.comment : ''}
                     </div>`;
   }
   innerHTML += `<div class="col-12">
-                        <div class="row m-3">
-                          <div class="col-3 offset-2">
-                            <button type="button" id="${doc.id}-action" class="btn btn-success btn-sm" onclick="${data.from !== 'user' ? `toggleComment('${doc.id}','${data.comment ? data.comment : ''}')` : `showEditForm('${doc.id}', '${data.data}')`}">${buttonText}</button>
-                          </div>
-                          <div class="col-3 offset-2">
-                            <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
-                          </div>
-                          <div class="col-2"></div>
+                    <div class="row m-3">
+                        <div class="col-6">
+                          <button id="${doc.id}-action" class="btn btn-success btn-sm" onclick="${data.from !== 'user' ? `toggleComment('${doc.id}','${data.comment ? data.comment : ''}')` : `showEditForm('${doc.id}', '${data.data}')`}">${buttonText}</button>
                         </div>
-                        <div id="${doc.id}-comment-section" class="col-12"></div> <!-- Added col-12 for the comment section -->
+                        <div class="col-6">
+                          <button type="button" class="btn btn-danger btn-sm" id="${doc.id}-delete" onclick="deleteJournalEntry('${doc.id}')">Delete</button>
+                        </div>
                     </div>
                   </div>`;
 
@@ -109,7 +131,22 @@ function renderJournalEntry(doc) {
   entryDiv.innerHTML = innerHTML;
   journalEntriesDiv.appendChild(entryDiv);
 }
+function myFunction(id) {
+  var dots = document.getElementById(`${id}-dots`);
+  var moreText = document.getElementById(`${id}-more`);
+  var btnText = document.getElementById(`${id}-myBtn`);
 
+  if (dots.style.display === "none") {
+    dots.style.display = "inline";
+    btnText.innerHTML = "Read more";
+    moreText.style.display = "none";
+  } else {
+    dots.style.display = "none";
+    btnText.innerHTML = "Read less";
+    moreText.style.display = "inline";
+  }
+  
+}
 // Function to toggle comment section
 function toggleComment(docId, comment) {
   const commentSection = document.getElementById(`${docId}-comment-section`);
@@ -231,17 +268,17 @@ function showAddNoteForm() {
   noteFormContainer.classList.remove("d-none"); // Remove the d-none class to show the container
 }
 
-// Event listener for the "Cancel" button in the add note form
-document.getElementById("cancelNoteBtn").addEventListener("click", function() {
-  // Prompt the user for confirmation
-  const confirmation = confirm("Are you sure you want to cancel adding the note?");
+// // Event listener for the "Cancel" button in the add note form
+// document.getElementById("cancelNoteBtn").addEventListener("click", function() {
+//   // Prompt the user for confirmation
+//   const confirmation = confirm("Are you sure you want to cancel adding the note?");
 
-  // If the user confirms the cancellation
-  if (confirmation) {
-      // Hide the add note form
-      hideAddNoteForm();
-  }
-});
+//   // If the user confirms the cancellation
+//   if (confirmation) {
+//       // Hide the add note form
+//       hideAddNoteForm();
+//   }
+// });
 // Event listener for the "Save" button in the add note form
 document.getElementById("saveNoteBtn").addEventListener("click", function() {
   const noteTextarea = document.getElementById("noteTextarea");
@@ -274,17 +311,17 @@ document.getElementById("saveNoteBtn").addEventListener("click", function() {
   }
 });
 
-// Function to hide the add note form
-function hideAddNoteForm() {
-  const noteFormContainer = document.getElementById("noteFormContainer");
-  const noteTextarea = document.getElementById("noteTextarea");
+// // Function to hide the add note form
+// function hideAddNoteForm() {
+//   const noteFormContainer = document.getElementById("noteFormContainer");
+//   const noteTextarea = document.getElementById("noteTextarea");
   
-  // Clear the textarea content
-  noteTextarea.value = '';
+//   // Clear the textarea content
+//   noteTextarea.value = '';
 
-  // Hide the form by adding the d-none class
-  noteFormContainer.classList.add("d-none");
-}
+//   // Hide the form by adding the d-none class
+//   noteFormContainer.classList.add("d-none");
+// }
 
 function showEditForm(docId, existingData) {
   const editFormContainer = document.getElementById(`${docId}-comment-section`);
