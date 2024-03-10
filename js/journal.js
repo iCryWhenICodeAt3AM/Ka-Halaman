@@ -389,8 +389,8 @@ function saveEditedData(docId) {
 // Get the maximum screen height
 const maxScreenHeight = window.screen.availHeight;
 
-// Calculate 30% of the maximum screen height
-const thirtyPercentHeight = 0.78 * maxScreenHeight;
+// Calculate % of the maximum screen height
+const thirtyPercentHeight = 0.70 * maxScreenHeight;
 
 // Set the journal-entries element's max-height and height properties
 const journalEntries = document.getElementById('journal-entries');
