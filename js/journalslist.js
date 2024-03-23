@@ -21,6 +21,7 @@ const journalCollectionsDiv = document.getElementById('journal-collections'); //
 // }
 // Function to create a new journal collection
 function createNewJournal() {
+    console.log(`Crop Id: ${cropId}`);
     const journalName = prompt("Enter the name for the new journal:");
     if (journalName) {
         db.collection("crops")

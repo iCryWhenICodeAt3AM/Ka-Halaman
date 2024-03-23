@@ -53,7 +53,7 @@ async function displayCrops() {
         const cropName = cropData.cropName;
         const initialBudget = cropData.initialBudget;
         // Rey Adjustment
-        let cropId = doc.id;
+        cropId = doc.id;
 
 
         // Create new row in table
@@ -97,7 +97,6 @@ async function displayCrops() {
                             // Set the image source in the modal
                             // ----------------------- Rey -----------------------------
                             cropId = cropDoc.id;
-                            console.log(cropId);
 
                             journalCollectionsDiv.innerHTML = '';
                             
@@ -139,9 +138,7 @@ async function displayCrops() {
                                             </div>
                                         </div>
                                     </div>`;
-                                    listContainer.innerHTML += contentDiv;
-
-                                   
+                                    listContainer.innerHTML += contentDiv;             
                                 });
                                 // Append the button to the container
                                 journalCollectionsDiv.appendChild(listContainer);
