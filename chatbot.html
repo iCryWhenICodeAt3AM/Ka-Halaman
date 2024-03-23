@@ -310,7 +310,8 @@
                                 existingForecastFound = true; // Set flag to true if existing forecast is found
                                 // Update the document with the new forecast
                                 docRef.doc(doc.id).update({
-                                    data: newFormattedForecasts
+                                    data: newFormattedForecasts,
+                                    date: firebase.firestore.FieldValue.serverTimestamp()
                                 }).then(() => {
                                     console.log("Weather forecast updated successfully");
                                 }).catch(error => {
