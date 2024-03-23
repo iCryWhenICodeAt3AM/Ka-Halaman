@@ -1,0 +1,13 @@
+::-webkit-scrollbar {
+  display: none;
+}
+body {
+  margin-bottom: 56px; /* Adjust this value according to the height of the navbar */
+}
+.navbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: green;
+  z-index: 100;
+}

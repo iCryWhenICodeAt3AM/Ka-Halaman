@@ -1,0 +1,41 @@
+/* Hide scrollbar for WebKit-based browsers */
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.image-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: auto;
+  margin: 0 auto;
+  padding: 4px;
+}
+
+.image-container .image-container-item {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  width: 330px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid green;
+}
+
+.image-container img {
+  height: auto;
+  max-width: auto;
+}
+
+.image-container-item > {
+  margin-bottom: 5px;
+}
+
+.caption-container {
+  margin-top: 10px;
+  padding: 6px;
+}
