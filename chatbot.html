@@ -96,12 +96,47 @@
 
         // Fetch your API_KEY
         const API_KEY = "AIzaSyB_DqoktUPNvFgQIf2vTW3R_e2yk4Tj0rM";
+        const documentId = 'JCD2Qk9cMB0waP2W0ep9';
 
         // Access your API key (see "Set up your API key" above)
         const genAI = new GoogleGenerativeAI(API_KEY);
 
         // Conversation array to store user prompts and responses
         const conversation = [];
+        // Onload
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Get the document from Firestore
+                const doc = await db.collection('information').doc(documentId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    const address = data.address;
+                    const farmName = data.farmName;
+                    const latitude = address.latitude; // Access latitude from the object
+                    const longitude = address.longitude; // Access longitude from the object
+
+                    // Use the retrieved data as needed
+                    console.log('Address:', address);
+                    console.log('Farm Name:', farmName);
+                    console.log('Latitude:', latitude);
+                    console.log('Longitude:', longitude);
+
+                    // Update the h1 element with the farm name
+                    var farmNameElement = document.getElementById('farmName');
+                    if (farmNameElement && farmName) {
+                        farmNameElement.textContent = farmName + "'s Farm";
+                    }
+
+                    // Fetch weather data and update the page
+                    fetchWeatherDataAndUpdate(latitude, longitude);
+                } else {
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                console.log('Error getting document:', error);
+            }
+        });
 
         document.getElementById("sendMessageButton").addEventListener("click", function () {
             const userPrompt = document.getElementById("prompt").value;
@@ -137,6 +172,27 @@
             // Display the conversation
             displayConversation();
         }
+
+        // async function sendMessage(userPrompt) {
+        //     // Store user message in the conversation
+        //     conversation.push({ role: 'user', text: userPrompt });
+        //     // Display the conversation
+        //     displayConversation();
+
+        //     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        //     // Limit the conversation mapping to the last 5 messages
+        //     const conversationSlice = conversation.slice(Math.max(conversation.length - 5, 0));
+        //     // Does not generate content with image awareness
+        //     const result = await model.generateContent(conversationSlice.map(entry => entry.text));
+        //     const response = await result.response;
+        //     const text = response.text();
+        //     console.log(text);
+        //     // Store Gemini Pro's response in the conversation
+        //     conversation.push({ role: 'gemini', text: text });
+        //     // Display the conversation
+        //     displayConversation();
+        // }
+
 
         async function sendMessageWithImage(userPrompt, image) {
             // Store user message in the conversation
@@ -210,6 +266,73 @@
             
             return text;
         }
+        function fetchWeatherDataAndUpdate(latitude, longitude) {
+            var openWeatherMapAPIKey = '4bbc8c0707f55312541a493a5b8068ac';
+            var forecastAPIUrl = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + latitude + '&lon=' + longitude + '&appid=' + openWeatherMapAPIKey;
+            fetch(forecastAPIUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Group forecast data by day
+                    var groupedForecasts = {};
+                    data.list.forEach(item => {
+                        var forecastTime = new Date(item.dt * 1000);
+                        var dayKey = forecastTime.toLocaleDateString();
+                        if (!groupedForecasts[dayKey]) {
+                            groupedForecasts[dayKey] = [];
+                        }
+                        groupedForecasts[dayKey].push(item);
+                    });
+
+                    // Process and accumulate forecast data for each day
+                    var newFormattedForecasts = "**Hi! Here's your weather forecast of the week.**\n\n"; // Initialize the variable to store all formatted forecasts
+                    Object.keys(groupedForecasts).forEach(dayKey => {
+                        var forecastsForDay = groupedForecasts[dayKey];
+                        var avgTemp = forecastsForDay.reduce((acc, curr) => acc + curr.main.temp - 273.15, 0) / forecastsForDay.length; // Convert temperature to Celsius
+                        var avgHumidity = forecastsForDay.reduce((acc, curr) => acc + curr.main.humidity, 0) / forecastsForDay.length;
+                        var avgPop = (forecastsForDay.reduce((acc, curr) => acc + (curr.pop || 0), 0) / forecastsForDay.length) * 100;
+                        var formattedForecast = `**${dayKey}**:\n *Temperature ${avgTemp.toFixed(2)}°C\n *Humidity ${avgHumidity.toFixed(2)}%\n *Precipitation ${avgPop.toFixed(2)}%\n\n`;
+                        newFormattedForecasts += formattedForecast; // Append the formatted forecast to the accumulator string
+                    });
+
+                    // Convert newFormattedForecasts to lowercase for case-insensitive comparison
+                    var newFormattedForecastsLowercase = newFormattedForecasts.toLowerCase();
+
+                    // Check if there is an existing forecast in the database
+                    var docRef = db.collection('crops').doc(cropId).collection('journals').doc(journalId).collection('saves');
+                    let existingForecastFound = false; // Flag to track if existing forecast is found
+
+                    docRef.get().then(snapshot => {
+                        snapshot.forEach(doc => {
+                            var existingForecast = doc.data().data.toLowerCase();
+                            console.log("Existing forecast:", existingForecast);
+                            if (existingForecast.includes('hi! here\'s your weather forecast of the week.')) {
+                                console.log("Match found. Updating document...");
+                                existingForecastFound = true; // Set flag to true if existing forecast is found
+                                // Update the document with the new forecast
+                                docRef.doc(doc.id).update({
+                                    data: newFormattedForecasts
+                                }).then(() => {
+                                    console.log("Weather forecast updated successfully");
+                                }).catch(error => {
+                                    console.error("Error updating weather forecast: ", error);
+                                });
+                            }
+                        });
+                        // If no documents contain the existing forecast, push the new forecast
+                        if (!existingForecastFound) {
+                            console.log("No existing forecast found. Pushing new forecast to conversations.");
+                            conversation.push({ role: 'gemini', text: newFormattedForecasts });
+                            displayConversation();
+                        }
+                    }).catch(error => {
+                        console.error('Error getting documents: ', error);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                });
+        }
+
 
         // File to Generative Part (Compressed)
         async function fileToGenerativePart(imageUrl, mimeType) {
