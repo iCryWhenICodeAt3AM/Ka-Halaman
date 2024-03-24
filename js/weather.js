@@ -141,7 +141,7 @@ function showDetailedWeather(day, forecastsForDay) {
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">${day} - ${timeOfDay}</h5>
-                    <p class="card-text">Temperature: ${forecast.main.temp - 273.15.toFixed(2)} &deg;C</p>
+                    <p class="card-text">Temperature: ${(forecast.main.temp - 273.15).toFixed(2)} &deg;C</p>
                     <p class="card-text">Humidity: ${forecast.main.humidity.toFixed(2)} %</p>
                     <p class="card-text">Description: ${forecast.weather[0].description}</p>
                 </div>

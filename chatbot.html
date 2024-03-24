@@ -290,7 +290,7 @@
                         var avgTemp = forecastsForDay.reduce((acc, curr) => acc + curr.main.temp - 273.15, 0) / forecastsForDay.length; // Convert temperature to Celsius
                         var avgHumidity = forecastsForDay.reduce((acc, curr) => acc + curr.main.humidity, 0) / forecastsForDay.length;
                         var avgPop = (forecastsForDay.reduce((acc, curr) => acc + (curr.pop || 0), 0) / forecastsForDay.length) * 100;
-                        var formattedForecast = `**${dayKey}**:\n *Temperature ${avgTemp.toFixed(2)}°C\n *Humidity ${avgHumidity.toFixed(2)}%\n *Precipitation ${avgPop.toFixed(2)}%\n\n`;
+                        var formattedForecast = `**Weather on ${dayKey}**:\n *Temperature ${avgTemp.toFixed(2)}°C\n *Humidity ${avgHumidity.toFixed(2)}%\n *Precipitation ${avgPop.toFixed(2)}%\n\n`;
                         newFormattedForecasts += formattedForecast; // Append the formatted forecast to the accumulator string
                     });
 
